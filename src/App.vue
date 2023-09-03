@@ -13,7 +13,10 @@
       <div class="trending-section">
         <h2>Trending home office ideas and designs</h2>
     <div class="image-slider" @scroll="onScroll">
-      <img v-for="(image, index) in images" :key="index" :src="image" alt="Design Image" width="100%" height="auto">
+      <div v-for="(image, index) in images" :key="index" class="image-wrapper">
+        <img :src="image" alt="Design Image">
+        <div class="image-index" v-if="currentImageIndex === index">{{ currentImageIndex + 1 }}/{{ images.length }}</div>
+      </div>
     </div>
     <div class="pagination-dots">
       <span v-for="(image, index) in images" :key="index" :class="{'active': currentImageIndex === index}"></span>
@@ -128,6 +131,28 @@ header {
   height: 300px;
   object-fit: cover;
   flex-shrink: 0; /* Prevents the image from shrinking in the flexbox layout */
+}
+
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.image-wrapper img {
+  width: 100vw;
+  height: 300px;
+  object-fit: cover;
+}
+
+.image-index {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-align: right;
 }
 
 .pagination-dots {
