@@ -34,7 +34,7 @@ export default {
 
 <style>
 body {
-  background-color: darkgrey;
+  background-color: darkgreen;
 
 }
 #app {
