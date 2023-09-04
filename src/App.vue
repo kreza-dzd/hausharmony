@@ -22,6 +22,21 @@
       <span v-for="(image, index) in images" :key="index" :class="{'active': currentImageIndex === index}"></span>
     </div>
      </div>
+
+     <div class="kitchen-section">
+  <h2>Trending kitchen ideas and designs</h2>
+  <div class="image-slider" @scroll="onKitchenScroll">
+    <div v-for="(kitchenImage, index) in kitchenImages" :key="index" class="image-wrapper">
+      <img :src="kitchenImage" alt="Kitchen Design Image">
+      <div class="image-index" v-if="currentKitchenImageIndex === index">{{ currentKitchenImageIndex + 1 }}/{{ kitchenImages.length }}</div>
+    </div>
+  </div>
+  <div class="pagination-dots">
+    <span v-for="(kitchenImage, index) in kitchenImages" :key="index" :class="{'active': currentKitchenImageIndex === index}"></span>
+  </div>
+</div>
+
+
     </main>
     <footer>
       <nav class="footer-nav">
@@ -56,6 +71,11 @@ import office1 from '@/assets/office1.jpg'
 import office2 from '@/assets/office2.jpg'
 import office3 from '@/assets/office3.jpg'
 import office4 from '@/assets/office4.jpg'
+import kitchen1 from '@/assets/kitchen1.jpg'
+import kitchen2 from '@/assets/kitchen2.jpg'
+import kitchen3 from '@/assets/kitchen3.jpg'
+import kitchen4 from '@/assets/kitchen4.jpg'
+
 
 export default {
   data() {
@@ -66,7 +86,10 @@ export default {
         office3,
         office4
       ],
-      currentImageIndex: 0
+      kitchenImages: [
+        kitchen1, kitchen2, kitchen3, kitchen4],
+      currentImageIndex: 0,
+      currentKitchenImageIndex: 0
     }
   },
   methods: {
@@ -74,7 +97,12 @@ export default {
       const container = event.target;
       const containerWidth = container.clientWidth;
       this.currentImageIndex = Math.round(container.scrollLeft / containerWidth);
-    }
+    },
+    onKitchenScroll(event) {
+    const container = event.target;
+    const containerWidth = container.clientWidth;
+    this.currentKitchenImageIndex = Math.round(container.scrollLeft / containerWidth);
+  }
   },
   name: 'App',
   components: {
@@ -114,6 +142,12 @@ header {
 }
 
 .trending-section h2 {
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.kitchen-section h2 {
   color: white;
   font-size: 12px;
   font-weight: 900;
