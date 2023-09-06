@@ -1,7 +1,10 @@
 <template>
   <div id="app">
     <header>
+      <div class="input-wrapper">
+      <div v-if="showIdeasOptions" @click="showIdeasOptions = false" class="back-button">←</div>
       <input type="text" placeholder="Pretraži...">
+    </div>
       <nav class="header-nav" v-if="!showIdeasOptions">
         <IdeasView @clicked="showIdeasOptions = true"/>
         <ProsView name="Pros">Pros</ProsView>
@@ -47,7 +50,7 @@
     <footer>
       <nav class="footer-nav">
         <div>
-          <img src="@/assets/logo.png" alt="Home Icon">
+          <img src="@/assets/logo.png" alt="Home Icon" @click="showHomepage">
           <a href="#home">Home</a>
         </div>
         <div>
@@ -106,6 +109,9 @@ export default {
     }
   },
   methods: {
+    showHomepage() {
+    this.showIdeasOptions = false;
+  },
     onScroll(event) {
       const container = event.target;
       const containerWidth = container.clientWidth;
@@ -148,6 +154,29 @@ header {
   width: 100%;
   margin-top: 1em;
 }
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  z-index: 10;
+  padding-right: 0.5em;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  margin-left: 2em; 
+}
+
 
 .trending-section {
   padding: 0;  
