@@ -26,17 +26,7 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-
-}
-.idea-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 ideas per row */
-  gap: 16px;
 }
 
-.idea-option img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-}
+
 </style>
