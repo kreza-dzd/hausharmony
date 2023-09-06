@@ -3,7 +3,8 @@
     <header>
       <div class="input-wrapper">
       <div v-if="showIdeasOptions" @click="showIdeasOptions = false" class="back-button">←</div>
-      <input type="text" placeholder="Pretraži...">
+      <input type="text" placeholder="Pretraži..." :class="{'expanded': showIdeasOptions}">
+
     </div>
       <nav class="header-nav" v-if="!showIdeasOptions">
         <IdeasView @clicked="showIdeasOptions = true"/>
@@ -172,10 +173,16 @@ header {
   padding-right: 0.5em;
 }
 
-input[type="text"] {
+input[type="text"].expanded {
   flex-grow: 1;
-  margin-left: 2em; 
+  margin-left: 3em;
 }
+
+input[type="text"] {
+
+  width: 100%;
+}
+
 
 
 .trending-section {
@@ -249,17 +256,32 @@ input[type="text"] {
   background: #333;
 }
 
-
 .ideas-options {
   display: grid;
   grid-template-columns: 1fr 1fr; /* 2 ideas per row */
-  gap: 16px;
+  gap: 1em;  /* Adjusted to 1em */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+.idea-option {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: dimgray;
+  color: white;
 }
 
 .idea-option img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 100%;
+  height: auto;
+  border-radius: 0%; /* Making it square */
+  object-fit: cover;  /* Resize the image properly */
+}
+
+.idea-option p {
+ text-align: center;
+ 
 }
 
 .footer-nav div {
