@@ -2,14 +2,14 @@
   <div id="app">
     <header>
       <input type="text" placeholder="Pretraži...">
-      <nav class="header-nav">
-        <IdeasView name="Ideas">Ideas</IdeasView>
+      <nav class="header-nav" v-if="!showIdeasOptions">
+        <IdeasView @clicked="showIdeasOptions = true"/>
         <ProsView name="Pros">Pros</ProsView>
         <ProductsView name="Products">Products</ProductsView>
         <AdviceView name="Advice">Advice</AdviceView>
       </nav>
     </header>
-    <main>
+    <main v-if="!showIdeasOptions">
       <div class="trending-section">
         <h2>Trending home office ideas and designs</h2>
     <div class="image-slider" @scroll="onScroll">
@@ -38,6 +38,12 @@
 
 
     </main>
+    <div v-if="showIdeasOptions" class="ideas-options">
+      <div v-for="(idea, index) in ideaOptions" :key="index" class="idea-option">
+        <img :src="idea.image" :alt="idea.name">
+        <p>{{ idea.name }}</p>
+      </div>
+    </div>
     <footer>
       <nav class="footer-nav">
         <div>
@@ -89,7 +95,14 @@ export default {
       kitchenImages: [
         kitchen1, kitchen2, kitchen3, kitchen4],
       currentImageIndex: 0,
-      currentKitchenImageIndex: 0
+      currentKitchenImageIndex: 0,
+      showIdeasOptions: false,
+    ideaOptions: [
+      { name: 'Kitchen', image: require('@/assets/kitchen1.jpg') },
+      { name: 'Living', image: require('@/assets/kitchen2.jpg') },
+      { name: 'Bedroom', image: require('@/assets/kitchen3.jpg') },
+      { name: 'Dinning Room', image: require('@/assets/kitchen4.jpg') }
+    ]
     }
   },
   methods: {
@@ -207,6 +220,18 @@ header {
   background: #333;
 }
 
+
+.ideas-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 ideas per row */
+  gap: 16px;
+}
+
+.idea-option img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
 
 .footer-nav div {
   text-align: center;
