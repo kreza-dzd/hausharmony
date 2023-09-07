@@ -18,9 +18,12 @@
         <h2>Trending home office ideas and designs</h2>
     <div class="image-slider" @scroll="onScroll">
       <div v-for="(image, index) in images" :key="index" class="image-wrapper">
-        <img :src="image" alt="Design Image">
-        <div class="image-index" v-if="currentImageIndex === index">{{ currentImageIndex + 1 }}/{{ images.length }}</div>
-      </div>
+    <img :src="image.url" alt="Design Image">
+    <div class="image-attribution">
+        Photo by <a :href="image.profile" target="_blank">{{ image.photographer }}</a> on <a href="https://unsplash.com" target="_blank">Unsplash</a>
+    </div>
+    <div class="image-index" v-if="currentImageIndex === index">{{ currentImageIndex + 1 }}/{{ images.length }}</div>
+</div>
     </div>
     <div class="pagination-dots">
       <span v-for="(image, index) in images" :key="index" :class="{'active': currentImageIndex === index}"></span>
@@ -31,9 +34,12 @@
   <h2>Trending kitchen ideas and designs</h2>
   <div class="image-slider" @scroll="onKitchenScroll">
     <div v-for="(kitchenImage, index) in kitchenImages" :key="index" class="image-wrapper">
-      <img :src="kitchenImage" alt="Kitchen Design Image">
-      <div class="image-index" v-if="currentKitchenImageIndex === index">{{ currentKitchenImageIndex + 1 }}/{{ kitchenImages.length }}</div>
+    <img :src="kitchenImage.url" alt="Kitchen Design Image">
+    <div class="image-attribution">
+        Photo by <a :href="kitchenImage.profile" target="_blank">{{ kitchenImage.photographer }}</a> on <a href="https://unsplash.com" target="_blank">Unsplash</a>
     </div>
+    <div class="image-index" v-if="currentKitchenImageIndex === index">{{ currentKitchenImageIndex + 1 }}/{{ kitchenImages.length }}</div>
+</div>
   </div>
   <div class="pagination-dots">
     <span v-for="(kitchenImage, index) in kitchenImages" :key="index" :class="{'active': currentKitchenImageIndex === index}"></span>
@@ -77,39 +83,40 @@ import ProsView from './components/ProsView.vue'
 import ProductsView from './components/ProductsView.vue'
 import AdviceView from './components/AdviceView.vue'
 
-import office1 from '@/assets/office1.jpg'
-import office2 from '@/assets/office2.jpg'
-import office3 from '@/assets/office3.jpg'
-import office4 from '@/assets/office4.jpg'
-import kitchen1 from '@/assets/kitchen1.jpg'
-import kitchen2 from '@/assets/kitchen2.jpg'
-import kitchen3 from '@/assets/kitchen3.jpg'
-import kitchen4 from '@/assets/kitchen4.jpg'
 
 
 export default {
   data() {
     return {
-      images: [
-        office1,
-        office2,
-        office3,
-        office4
-      ],
-      kitchenImages: [
-        kitchen1, kitchen2, kitchen3, kitchen4],
-      currentImageIndex: 0,
-      currentKitchenImageIndex: 0,
-      showIdeasOptions: false,
-    ideaOptions: [
-      { name: 'Kitchen', image: require('@/assets/kitchen1.jpg') },
-      { name: 'Living', image: require('@/assets/kitchen2.jpg') },
-      { name: 'Bedroom', image: require('@/assets/kitchen3.jpg') },
-      { name: 'Dinning Room', image: require('@/assets/kitchen4.jpg') }
-    ]
-    }
-  },
+    images: [],
+    kitchenImages: [],
+    currentImageIndex: 0,
+    currentKitchenImageIndex: 0,
+    showIdeasOptions: false,
+    ideaOptions: []
+  };
+},
   methods: {
+    fetchImages(query, count = 4) {
+    const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
+    const apiUrl = `https://api.unsplash.com/search/photos?query=${query}&client_id=${ACCESS_KEY}&per_page=${count}`;
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const transformedData = data.results.map(photo => ({
+          url: photo.urls.regular,
+          photographer: photo.user.name,
+          profile: photo.user.links.html
+        }));
+
+        if (query === "home office") {
+          this.images = transformedData;
+        } else if (query === "kitchen") {
+          this.kitchenImages = transformedData;
+        }
+      });
+},
     showHomepage() {
     this.showIdeasOptions = false;
   },
@@ -124,6 +131,10 @@ export default {
     this.currentKitchenImageIndex = Math.round(container.scrollLeft / containerWidth);
   }
   },
+  mounted() {
+  this.fetchImages("home office");
+  this.fetchImages("kitchen");
+},
   name: 'App',
   components: {
     IdeasView,
@@ -237,6 +248,29 @@ input[type="text"] {
   border-radius: 5px;
   text-align: right;
 }
+
+.image-attribution {
+    font-size: 10px;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.image-attribution a {
+    color: white;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.image-attribution a:hover {
+    color: #ccc;
+}
+
 
 .pagination-dots {
   display: flex;
