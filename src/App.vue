@@ -93,10 +93,46 @@ export default {
     currentImageIndex: 0,
     currentKitchenImageIndex: 0,
     showIdeasOptions: false,
-    ideaOptions: []
+    categories: ["kitchen", "living room", "bedroom", "home office"],
+    ideaOptions: [
+  { image: './assets/bell.png', name: 'Title 1' },
+  { image: '@/assets/bell.png', name: 'Title 2' },
+  { image: '@/assets/bell.png', name: 'Title 3' },
+  { image: '@/assets/bell.png', name: 'Title 4' }
+]
+
   };
 },
   methods: {
+    fetchTrendingImages() {
+    const promises = this.categories.map(category => this.fetchImageForCategory(category));
+    
+    Promise.all(promises)
+      .then(images => {
+        this.ideaOptions = images;
+      })
+  },
+
+  fetchImageForCategory(category) {
+    const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
+    const apiUrl = `https://api.unsplash.com/search/photos?query=${category}&client_id=${ACCESS_KEY}&per_page=1`;
+    
+    return fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data.results[0]) {
+          return {
+            image: data.results[0].urls.regular,
+            name: `Title ${this.categories.indexOf(category) + 1}`
+          };
+        } else {
+          return {
+            image: '', // Fallback image or blank
+            name: `Title ${this.categories.indexOf(category) + 1}`
+          };
+        }
+      });
+  },
     fetchImages(query, count = 4) {
     const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
     const apiUrl = `https://api.unsplash.com/search/photos?query=${query}&client_id=${ACCESS_KEY}&per_page=${count}`;
@@ -134,6 +170,7 @@ export default {
   mounted() {
   this.fetchImages("home office");
   this.fetchImages("kitchen");
+  this.fetchTrendingImages();
 },
   name: 'App',
   components: {
@@ -299,12 +336,14 @@ input[type="text"] {
 }
 
 
-.idea-option {
+.ideas-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
   width: 100%;
   box-sizing: border-box;
-  background-color: dimgray;
-  color: white;
 }
+
 
 .idea-option img {
   width: 100%;
