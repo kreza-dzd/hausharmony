@@ -94,13 +94,6 @@ export default {
     currentKitchenImageIndex: 0,
     showIdeasOptions: false,
     categories: ["kitchen", "living room", "bedroom", "home office"],
-    ideaOptions: [
-  { image: './assets/bell.png', name: 'Title 1' },
-  { image: '@/assets/bell.png', name: 'Title 2' },
-  { image: '@/assets/bell.png', name: 'Title 3' },
-  { image: '@/assets/bell.png', name: 'Title 4' }
-]
-
   };
 },
   methods: {
@@ -123,12 +116,12 @@ export default {
         if (data.results[0]) {
           return {
             image: data.results[0].urls.regular,
-            name: `Title ${this.categories.indexOf(category) + 1}`
+            name: category.charAt(0).toUpperCase() + category.slice(1)
           };
         } else {
           return {
             image: '', // Fallback image or blank
-            name: `Title ${this.categories.indexOf(category) + 1}`
+            name: category.charAt(0).toUpperCase() + category.slice(1)
           };
         }
       });
@@ -347,9 +340,10 @@ input[type="text"] {
 
 .idea-option img {
   width: 100%;
-  height: auto;
+  height: 200px;
   border-radius: 0%; /* Making it square */
   object-fit: cover;  /* Resize the image properly */
+  display: block;
 }
 
 .idea-option p {
