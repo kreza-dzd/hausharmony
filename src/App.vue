@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <header>
+    <header class="bg-dark" >
       <div class="input-wrapper">
       <div v-if="showIdeasOptions" @click="showIdeasOptions = false" class="back-button">←</div>
       <input type="text" placeholder="Pretraži..." :class="{'expanded': showIdeasOptions}">
 
     </div>
-      <nav class="header-nav" v-if="!showIdeasOptions">
+
+    <nav class="header-nav d-flex justify-content-around w-100 mt-3" v-if="!showIdeasOptions">s
         <IdeasView @clicked="showIdeasOptions = true"/>
         <ProsView name="Pros">Pros</ProsView>
         <ProductsView name="Products">Products</ProductsView>
@@ -18,7 +19,7 @@
         <h2>Trending home office ideas and designs</h2>
     <div class="image-slider" @scroll="onScroll">
       <div v-for="(image, index) in images" :key="index" class="image-wrapper">
-    <img :src="image.url" alt="Design Image">
+        <img :src="image.url" :alt="`${image.photographer}'s design image from Unsplash`">
     <div class="image-attribution">
         Photo by <a :href="image.profile" target="_blank">{{ image.photographer }}</a> on <a href="https://unsplash.com" target="_blank">Unsplash</a>
     </div>
@@ -31,10 +32,11 @@
      </div>
 
      <div class="kitchen-section">
-  <h2>Trending kitchen ideas and designs</h2>
+  <h2 class="text-white fs-5 fw-bold">Trending kitchen ideas and designs</h2>
   <div class="image-slider" @scroll="onKitchenScroll">
     <div v-for="(kitchenImage, index) in kitchenImages" :key="index" class="image-wrapper">
-    <img :src="kitchenImage.url" alt="Kitchen Design Image">
+      <img :src="kitchenImage.url" :alt="`${kitchenImage.photographer}'s kitchen design image from Unsplash`">
+
     <div class="image-attribution">
         Photo by <a :href="kitchenImage.profile" target="_blank">{{ kitchenImage.photographer }}</a> on <a href="https://unsplash.com" target="_blank">Unsplash</a>
     </div>
@@ -49,13 +51,14 @@
 
     </main>
     <div v-if="showIdeasOptions" class="ideas-options">
-      <div v-for="(idea, index) in ideaOptions" :key="index" class="idea-option">
+      <div v-for="(idea, index) in ideaOptions" :key="index" class="idea-option" 
+     @click="idea.name === 'Kitchen' ? loadKitchenImages() : logIdea(idea)">
         <img :src="idea.image" :alt="idea.name">
         <p>{{ idea.name }}</p>
       </div>
     </div>
-    <footer>
-      <nav class="footer-nav">
+    <footer class="bg-dark text-white fixed-bottom">
+      <nav class="footer-nav d-flex justify-content-around py-3">
         <div>
           <img src="@/assets/logo.png" alt="Home Icon" @click="showHomepage">
           <a href="#home">Home</a>
@@ -78,10 +81,16 @@
 </template>
 
 <script>
+
+
+
+
 import IdeasView from './components/IdeasView.vue'
 import ProsView from './components/ProsView.vue'
 import ProductsView from './components/ProductsView.vue'
 import AdviceView from './components/AdviceView.vue'
+import axios from 'axios';
+
 
 
 
@@ -93,11 +102,45 @@ export default {
     currentImageIndex: 0,
     currentKitchenImageIndex: 0,
     showIdeasOptions: false,
+    ideaOptions: [],
     categories: ["kitchen", "living room", "bedroom", "home office"],
   };
 },
   methods: {
+
+    logIdea(idea) {
+  console.log(idea.name);
+},
+
+async loadKitchenImages() {
+    try {
+        let response = await axios.get('https://api.unsplash.com/search/photos', {
+            params: {
+                query: 'kitchen',
+                per_page: 4,
+                client_id: 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'
+            }
+        });
+        console.log("API Response:", response);  // This will show the entire response object
+
+        this.kitchenImages = response.data.results.map(image => ({
+            url: image.urls.regular,
+            photographer: image.user.name,
+            profile: image.user.links.html
+        }));
+
+        // Add the console.log statement here
+        console.log("Kitchen Images Data:", this.kitchenImages); 
+
+    } catch (error) {
+        console.error("Error fetching kitchen images:", error);
+    }
+},
+
+
     fetchTrendingImages() {
+  
+
     const promises = this.categories.map(category => this.fetchImageForCategory(category));
     
     Promise.all(promises)
@@ -106,46 +149,55 @@ export default {
       })
   },
 
-  fetchImageForCategory(category) {
-    const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
-    const apiUrl = `https://api.unsplash.com/search/photos?query=${category}&client_id=${ACCESS_KEY}&per_page=1`;
-    
-    return fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (data.results[0]) {
-          return {
-            image: data.results[0].urls.regular,
-            name: category.charAt(0).toUpperCase() + category.slice(1)
-          };
-        } else {
-          return {
-            image: '', // Fallback image or blank
-            name: category.charAt(0).toUpperCase() + category.slice(1)
-          };
-        }
-      });
-  },
-    fetchImages(query, count = 4) {
-    const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
-    const apiUrl = `https://api.unsplash.com/search/photos?query=${query}&client_id=${ACCESS_KEY}&per_page=${count}`;
+  async fetchImageForCategory(category) {
+  const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
+  const apiUrl = `https://api.unsplash.com/search/photos?query=${category}&client_id=${ACCESS_KEY}&per_page=1`;
+  
+  try {
+    const response = await axios.get(apiUrl);
+    const data = response.data;
 
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        const transformedData = data.results.map(photo => ({
-          url: photo.urls.regular,
-          photographer: photo.user.name,
-          profile: photo.user.links.html
-        }));
-
-        if (query === "home office") {
-          this.images = transformedData;
-        } else if (query === "kitchen") {
-          this.kitchenImages = transformedData;
-        }
-      });
+    if (data.results[0]) {
+      return {
+        image: data.results[0].urls.regular,
+        name: category.charAt(0).toUpperCase() + category.slice(1)
+      };
+    } else {
+      return {
+        image: '', // Fallback image or blank
+        name: category.charAt(0).toUpperCase() + category.slice(1)
+      };
+    }
+  } catch (error) {
+    console.error(`Error fetching image for ${category}:`, error.message);
+  }
 },
+
+async fetchImages(query, count = 4) {
+  const ACCESS_KEY = 'pWxdlp-fbNBN_ZiSGOcHjy6G4ds0f7uwHFK-8lJVHss'; 
+  const apiUrl = `https://api.unsplash.com/search/photos?query=${query}&client_id=${ACCESS_KEY}&per_page=${count}`;
+
+  try {
+    const response = await axios.get(apiUrl);
+    const data = response.data;
+
+    const transformedData = data.results.map(photo => ({
+  url: photo.urls.regular,
+  photographer: photo.user.name,
+  profile: photo.user.links.html
+}));
+
+if (query.toLowerCase() === "home office") {
+  this.images = transformedData;
+} else if (query.toLowerCase() === "kitchen") {
+  this.kitchenImages = transformedData;
+}
+
+  } catch (error) {
+    console.error(`Error fetching images for ${query}:`, error.message);
+  }
+},
+
     showHomepage() {
     this.showIdeasOptions = false;
   },
@@ -190,11 +242,17 @@ header {
   padding: 1em;
   border-bottom: 1px solid #ccc;
 }
-.header-nav {
-  display: flex;
-  justify-content: space-around;
+
+
+
+input[type="text"].expanded {
+  flex-grow: 1;
+  margin-left: 3em;
+}
+
+input[type="text"] {
+
   width: 100%;
-  margin-top: 1em;
 }
 
 .input-wrapper {
@@ -214,18 +272,6 @@ header {
   padding-right: 0.5em;
 }
 
-input[type="text"].expanded {
-  flex-grow: 1;
-  margin-left: 3em;
-}
-
-input[type="text"] {
-
-  width: 100%;
-}
-
-
-
 .trending-section {
   padding: 0;  
   margin: 0;  
@@ -237,11 +283,18 @@ input[type="text"] {
   font-weight: 900;
 }
 
-.kitchen-section h2 {
-  color: white;
-  font-size: 12px;
-  font-weight: 900;
+.kitchen-section .image-wrapper {
+    width: 50%;
+    float: left;
+    box-sizing: border-box;
+    padding: 5px; /* Optional: Add some padding between images */
 }
+
+/* Clear float for the parent container */
+.kitchen-section {
+    overflow: auto;
+}
+
 
 .image-slider {
   display: flex;
@@ -370,11 +423,6 @@ input[type="text"] {
   padding-top: 0.5em;
 }
 
-.footer-nav {
-  display: flex;
-  justify-content: space-around;
-  padding: 1em 0;
-}
 
 
 input[type="text"] {
@@ -385,15 +433,6 @@ input[type="text"] {
 }
 main {
   flex-grow: 1;
-}
-footer {
-  background: #333;
-  color: white;
-  padding-bottom: 1.5em;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
 }
 
 footer a {
