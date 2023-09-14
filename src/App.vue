@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header>
+    <header class="bg-dark p-3">
       <div class="input-wrapper">
       <div v-if="showIdeasOptions" @click="showIdeasOptions = false" class="back-button">←</div>
       <input type="text" placeholder="Pretraži..." :class="{'expanded': showIdeasOptions}">
@@ -48,10 +48,10 @@
 
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos, quae numquam veniam animi ea, debitis illum placeat maxime labore nemo cupiditate saepe! Reprehenderit cumque quae debitis eligendi aliquid repellendus. Saepe quibusdam animi, tempora illum maiores iusto vitae, atque alias hic veritatis culpa, molestias quam beatae dolorem accusamus recusandae! Maiores a explicabo iste cupiditate autem minima eius, nulla perferendis magnam exercitationem.</p>
     </main>
-    <div v-if="showIdeasOptions" class="ideas-options">
+    <div v-if="showIdeasOptions" class="ideas-options bg-secondary p-3">
       <div v-for="(idea, index) in ideaOptions" :key="index" class="idea-option">
         <img :src="idea.image" :alt="idea.name">
-        <p>{{ idea.name }}</p>
+        <p class="text-white p-3">{{ idea.name }}</p>
       </div>
     </div>
     <footer>
